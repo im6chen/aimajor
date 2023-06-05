@@ -83,7 +83,7 @@ def add_major(input):
 # 分析性格
 def analysis_mbti(input):
     major_prompt=f"""
-        分析一下{input["mbti"]}这种MBTI性格的人群有什么特点(每条特点10字左右),使用Markdown表格输出,```中是示例:
+        分析一下{input["mbti"]}这种MBTI性格的人群5个特点(每条特点10字左右),使用Markdown表格输出,```中是示例:
         ```
         ## 1. {input["mbti"]}人群性格分析
         根据提供的信息，您的性格类型可能是{input["mbti"]}，具备以下特点:
@@ -94,7 +94,7 @@ def analysis_mbti(input):
         5  |xxx|xxx
         ```
         """
-    output_text = get_completion(major_prompt, temperature=0.5)
+    output_text = get_completion(major_prompt, temperature=0.2)
     return output_text
 
 # 为什么是这5个专业

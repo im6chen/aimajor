@@ -185,16 +185,15 @@ def page6():
             result3 = major.analysis_major5(st.session_state.user_info)
             break  # 如果成功执行，跳出循环
         except Exception as e:
-            st.error("服务器过载，正在重新计算")
+            st.error(" :grey_exclamation: 服务器过载，正在重新计算")
             continue  # 继续重新执行该代码段
     my_bar.progress(100, ":bulb: 完成")
     st.markdown(f"{result3}")
     st.markdown("---")
 
     new_code = str(random.randint(1000, 9999))  # 生成一个新的四位数邀请码
-    st.markdown("点击右上角≡，点击Print可保存结果为PDF文件")
-    st.markdown("> 你获取了新的邀请码，可以邀请朋友来体验:")
-    st.markdown(f"# {new_code}")
+    st.markdown("> 解锁了新的邀请码，可以邀请朋友来体验:")
+    st.markdown(f"# :point_right: {new_code}")
     st.markdown("> https://zhuanye.aiis.run")
     st.markdown("> 关注@AI小分队")
     invitation.save_invitation_code(new_code)
