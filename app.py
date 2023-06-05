@@ -124,22 +124,32 @@ def page5():
     # 用户选择理科/文科
     subject = st.radio('你学的是文科还是理科', ('理科', '文科'), horizontal=True)
     # 用户输入自我介绍
-    evaluation = st.text_area('请随便介绍一下自己')
 
-    # 整理用户信息为 json
-    user_info = {
-        "gender": gender,          # 性别
-        "subject": subject,        # 高考是文科或理科
-        "mbti": personality_type,  # MBTI类型
-        "evaluation": evaluation,   # 自我评价
-        "major5": []               # 推荐的专业
-    }
+    # evaluation = st.text_area('请随便介绍一下自己')
+    evaluation = st.text_area('请随便介绍一下自己', value="比如:我喜欢打游戏,这辈子不可能打工,有没有躺着赚钱的专业")
 
-    if st.button("AI推荐"):
-        st.cache_data.clear()
-        st.session_state.page = 6
-        st.session_state.user_info = user_info
-        st.experimental_rerun()
+    # if st.button("AI推荐"):
+    #     st.cache_data.clear()
+    #     st.session_state.page = 6
+    #     st.session_state.user_info = user_info
+    #     st.experimental_rerun()
+
+    if len(evaluation) > 10:
+        # 整理用户信息为 json
+        user_info = {
+            "gender": gender,          # 性别
+            "subject": subject,        # 高考是文科或理科
+            "mbti": personality_type,  # MBTI类型
+            "evaluation": evaluation,   # 自我评价
+            "major5": []               # 推荐的专业
+        }
+        if st.button("AI推荐"):
+            st.cache_data.clear()
+            st.session_state.page = 6
+            st.session_state.user_info = user_info
+            st.experimental_rerun()
+    else:
+        st.write("请输入至少10个字符")
 
 def page6():
     # import major
