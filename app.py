@@ -5,11 +5,14 @@ import time
 
 from PIL import Image
 import major
+import invitation
 
 # 例如
 # "S/N": [ {"question": "我喜欢按部就班地解决问题，而不是寻找全新的方法。", "score": "S"}, ...]
 # 用户的选择的数值将加在"S"上
 # 从文件加载问题
+
+st.set_page_config(page_title="AI选专业(@AI小分队)")
 
 mbti_dims = ['EI', 'SN', 'TF', 'JP']
 
@@ -34,58 +37,66 @@ if "user_score" not in st.session_state:
 
 def page0():
     introduce_test = """
-> MBTI基于卡尔·荣格的心理学理论，将人格划分为16种不同类型。
-> 
-> 每种类型由四个维度表示：
-
-类型   | 标识 | 描述     
-------|------|----------
-外向（Extraversion） | E  | 喜欢与他人互动，从外部环境中获取能量。
-内向（Introversion） | I  | 喜欢独处，从内部世界中获取能量。
- | | 
-感觉（Sensing）   | S  | 注重具体细节和现实情况，倾向于实用和现实。
-直觉（Intuition） | N  | 注重抽象概念和未来可能性，倾向于想象和探索。
- | | 
-思考（Thinking） | T  | 以逻辑和客观的方式做决策，注重事实和原则。
-情感（Feeling）  | F  | 以情感和价值观为基础做决策，注重他人感受和关系。
- | | 
-判断（Judging）    | J  | 喜欢有结构和组织，倾向于计划和控制。
-知觉（Perceiving） | P  | 喜欢灵活应对，倾向于适应和探索。
-
-> 在这个测试中，您将回答一系列关于自己偏好和行为方式的问题。
->
-> 请尽量根据您的真实感受和反应回答问题。
->
-> **没有正确或错误的答案**，只有反映您个人倾向的选项。
->
-> 完成测试后，您将获得一个MBTI人格类型代码，例如"INFJ"或"ESTP"。
->
-> 这个代码将帮助您更好地理解自己的偏好和特点，并为个人发展和职业选择提供有价值的参考。
-
-
-#
-##### 准备好了吗？开始探索自己吧!
-
+        > 这个测试基于卡尔·荣格的心理学理论，**没有正确或错误的答案**，只反映您个人倾向。
+        >
+        > 完成测试后，你将获得一个人格类型代码，例如"INFJ"或"ESTP"。
+        >
+        > 这个代码将帮助您更好地理解自己的偏好和特点，并为个人发展和职业选择提供参考。
+        #
+        ##### 准备好了吗？开始探索自己吧!
     """
+
+    st.warning("""
+        选专业，相对于高考来说，甚至是更重要的一件事情。
+       
+        要想在800个专业里，几乎不可能选到最适合自己的。
+       
+        还好我们现在有了AI，可以给我们一些建议。
+    """)
     st.markdown(introduce_test)
+    user_code = st.text_input("请输入邀请码")
     if st.button("开始"):
-        st.session_state.page = 1
-        st.experimental_rerun()
+        invitation_codes = invitation.load_invitation_codes()
+        if user_code in invitation_codes:  # 检查用户输入的邀请码是否正确
+            st.session_state.page = 1
+            st.experimental_rerun()
+        else:
+            st.warning("请输入正确的邀请码")
 
 
 #构造page1到page4
 def create_page_function(number):
     dim = mbti_dims[number-1]
     def page_function():
-        st.markdown(f"## 进度{number}/4")
-        st.markdown("""
->  最左侧[-3]表示"非常不认同"    最右侧[3]表示"非常认同"
-> 
->  如果不确定,则保持在中间[0]。
+        if number == 1:
+            jindu = "◉○○○"
+        elif number == 2:
+            jindu = "◉◉○○ "
+        elif number == 3:
+            jindu = "◉◉◉○ "
+        elif number == 4:
+            jindu = "◉◉◉◉"
+        else:
+            jindu = "◉◉◉◉"
+        st.markdown(f"""
+                    >  进度: {jindu}
+                    > 
+                    >  根据对这句话的**认可度**选择
+                    ---
                     """)
-
         for q in questions[dim]:
-            answer = st.slider(q["question"], min_value=-3, max_value=3, value=0, step=1)
+            transdict = {
+                "非常不认同": -3,
+                "不认同": -2,
+                "应该不是": -1,
+                "不确定": 0,
+                "应该是": 1,
+                "认同": 2,
+                "非常认同": 3
+            }
+            user_selector = st.select_slider(q["question"], ("非常不认同","不认同","应该不是","不确定","应该是","认同","非常认同"), "不确定")
+            st.markdown("---")
+            answer = transdict[user_selector]
             index = dim.index(q["score"])
             st.session_state.user_score[dim][index] += answer
 
@@ -101,8 +112,8 @@ for i in range(1, 4+1):
 # 结果page
 def page5():
     personality_type = "".join([dim[0] if st.session_state.user_score[dim][0] > st.session_state.user_score[dim][1] else dim[1] for dim in mbti_dims])
-    st.markdown("### 你的MBTI类型可能是:")
-    st.markdown(f"# {personality_type}")
+    st.markdown("## 你的MBTI类型可能是:")
+    st.markdown(f"# :point_right: {personality_type}")
     # st.markdown(f"<p style='color:red'>{personality_type}</p>",True) # HTML
 
 
@@ -113,61 +124,92 @@ def page5():
     # 用户选择理科/文科
     subject = st.radio('你学的是文科还是理科', ('理科', '文科'), horizontal=True)
     # 用户输入自我介绍
-    evaluation = st.text_input('请随便介绍一下自己')
+    evaluation = st.text_area('请随便介绍一下自己')
 
     # 整理用户信息为 json
     user_info = {
-        "gender": gender,        # 性别
-        "subject": subject,      # 文理科
-        "MBTI": personality_type,  # MBTI
-        "evaluation": evaluation  # 自我评价
+        "gender": gender,          # 性别
+        "subject": subject,        # 高考是文科或理科
+        "mbti": personality_type,  # MBTI类型
+        "evaluation": evaluation,   # 自我评价
+        "major5": []               # 推荐的专业
     }
 
-    if st.button("AI计算"):
-        st.session_state.page += 1
+    if st.button("AI推荐"):
+        st.cache_data.clear()
+        st.session_state.page = 6
         st.session_state.user_info = user_info
         st.experimental_rerun()
 
 def page6():
     # import major
     # 显示进度条
-    my_bar = st.progress(0, "AI开始计算...")
-    my_bar.progress(2,"正在检索中国大学专业数据库...")
+    my_bar = st.progress(0, ":fire: AI开始计算...")
     time.sleep(1)
-    my_bar.progress(20, "正在检索中国大学专业数据库...")
-    time.sleep(1)
-    my_bar.progress(31, "正在匹配信息(此过程较长)...")
-    result = major.main(st.session_state.user_info)
-    time.sleep(1)
-    my_bar.progress(81, "使用GPT4进行精确匹配...")
-    st.markdown(f"# AI根据你的信息分析结果:")
-    time.sleep(1)
-    my_bar.progress(100, "完成")
-    st.markdown(f"{result}")
+    my_bar.progress(5,":books: 正在整理数据...")
 
-    # 渲染result
-    # 这里我只是简单的显示了结果，你可能需要根据result的结构来定制你的显示方式
-    # st.write(result)
-    # st.markdown(f"{result.personality_type}")
-    # st.markdown(f"{result.suggestion}")
+    while True:
+        try:
+            st.session_state.user_info = major.add_major(st.session_state.user_info)
+            break  # 如果成功执行，跳出循环
+        except Exception as e:
+            st.error("服务器过载，正在重新计算")
+            continue  # 继续重新执行该代码段
+    my_bar.progress(21,":mag: 正在检索中国大学专业数据库...")
+    st.markdown(f"# :zap: AI分析结果:")
 
-    
-    # st.markdown("## 5个专业推荐:")
+    while True:
+        try:
+            result1 = major.analysis_mbti(st.session_state.user_info)
+            break  # 如果成功执行，跳出循环
+        except Exception as e:
+            st.error("服务器过载，正在重新计算")
+            continue  # 继续重新执行该代码段
+    my_bar.progress(51, ":rocket: 正在匹配合适的专业...")
+    st.markdown(f"{result1}")
+    st.markdown("---")
 
-    # for each in result.major5:
-    #     st.markdown("---")
-    #     st.markdown("## 专业{each.index}")
-    #     st.markdown("## {each.major}:")
-    #     st.markdown("## {each.details.top5}:")
-    #     st.markdown("## {each.details.good5}:")
-    #     st.markdown("## {each.details.institutions}:")
-    #     st.markdown("## {each.details.jobtitle}:")
-    #     st.markdown("---")
+    while True:
+        try:
+            result2 = major.why_major5(st.session_state.user_info)
+            break  # 如果成功执行，跳出循环
+        except Exception as e:
+            st.error("服务器过载，正在重新计算")
+            continue  # 继续重新执行该代码段
+    my_bar.progress(81, ":tea: 正在整理结果...")
+    st.markdown(f"{result2}")
+    st.markdown("---")
 
+    while True:
+        try:
+            result3 = major.analysis_major5(st.session_state.user_info)
+            break  # 如果成功执行，跳出循环
+        except Exception as e:
+            st.error("服务器过载，正在重新计算")
+            continue  # 继续重新执行该代码段
+    my_bar.progress(100, ":bulb: 完成")
+    st.markdown(f"{result3}")
+    st.markdown("---")
+
+    new_code = str(random.randint(1000, 9999))  # 生成一个新的四位数邀请码
+    st.markdown("点击右上角≡，点击Print可保存结果为PDF文件")
+    st.markdown("> 你获取了新的邀请码，可以邀请朋友来体验:")
+    st.markdown(f"# {new_code}")
+    st.markdown("> https://zhuanye.aiis.run")
+    st.markdown("> 关注@AI小分队")
+    invitation.save_invitation_code(new_code)
+
+# 设置sidebar
 image = Image.open('./static/aiteam.png')
-st.sidebar.image(image, caption='AI小分队', use_column_width=True)
+st.sidebar.image(image, caption='@AI小分队', use_column_width=True)
+st.sidebar.markdown("因算力有限，项目未公开")
+st.sidebar.markdown("抖音@AI小分队 **获取邀请码**进行体验")
+st.sidebar.markdown("完成后会获得邀请码，可以邀请朋友体验")
+st.sidebar.markdown("#### 此测试完全免费，私信1V1专业测试")
 
+#页面标题
 st.title(":star: AI选专业")
+st.markdown("---")
 
 if "page" not in st.session_state:
     st.session_state.page = 0
