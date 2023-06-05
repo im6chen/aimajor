@@ -204,7 +204,8 @@ st.sidebar.image(image, caption='@AI小分队', use_column_width=True)
 st.sidebar.markdown("因算力有限，项目未公开")
 st.sidebar.markdown("抖音@AI小分队 **获取邀请码**进行体验")
 st.sidebar.markdown("完成后会获得邀请码，可以邀请朋友体验")
-st.sidebar.markdown("#### 此测试完全免费，私信1V1专业测试")
+st.sidebar.markdown("#### 此测试完全免费")
+st.sidebar.markdown("#### 私信1V1专业测试")
 
 #页面标题
 st.title(":star: AI选专业")
