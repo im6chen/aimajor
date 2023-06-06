@@ -68,7 +68,7 @@ def add_major(input):
         我是一个高三学生，刚参加完高考准备选专业，我的情况在会用json格式写出来: 
         {input} 
 
-        整理以上信息,帮我推荐5个专业,这5个专业使用```中的格式输出格式:
+        结合我的自我介绍信息,帮我推荐5个适合我这样{input["subject"]}{input["gender"]}生学的专业,这5个专业使用```中的格式输出格式:
         ```
         ["xxx","xxx","xxx","xxx","xxx"]
         ```
@@ -83,15 +83,15 @@ def add_major(input):
 # 分析性格
 def analysis_mbti(input):
     major_prompt=f"""
-        分析一下{input["mbti"]}这种MBTI性格的人群5个特点(每条特点10字左右),使用Markdown表格输出,```中是示例:
+        结合我的自我介绍{input["evaluation"]}以及我的MBTI性格类型{input["mbti"]},分析我的5个性格特点(每条特点10字以上),使用Markdown表格输出,```中是示例:
         ```
         ## 1. {input["mbti"]}人群性格分析
-        根据提供的信息，您的性格类型可能是{input["mbti"]}，具备以下特点:
-        :sunny: |优点|不足
+        您的性格类型可能是{input["mbti"]}，结合你的自我介绍，可能具备以下特点:
+        序|优点|不足
         ---|---|---
-        1  |xxx|xxx
+        1  |xxxxx|xxxxx
         ...|...|...
-        5  |xxx|xxx
+        5  |xxxxx|xxxxx
         ```
         """
     output_text = get_completion(major_prompt, temperature=0.2)
@@ -106,7 +106,7 @@ def why_major5(input):
         其中{input["major5"]}是你给我推荐的5个专业,结合我的自我介绍和MBTI性格类型,详细说一下推荐的原因(每个30字以上),使用markdown表格输出,```中是示例:
         ```
         ## 2. 专业推荐
-        :mortar_board: |专业|推荐原因
+        序 |专业|推荐原因
         ---|---|---
         1  | xxxx| xxxxx
         ...| ... | ...

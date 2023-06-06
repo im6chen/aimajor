@@ -1,5 +1,5 @@
 # 基于Python镜像构建Docker镜像
-FROM python:3.8
+FROM python:3.10
 
 # 设置工作目录
 WORKDIR /app

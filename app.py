@@ -112,7 +112,7 @@ for i in range(1, 4+1):
 # 结果page
 def page5():
     personality_type = "".join([dim[0] if st.session_state.user_score[dim][0] > st.session_state.user_score[dim][1] else dim[1] for dim in mbti_dims])
-    st.markdown("## 你的MBTI类型可能是:")
+    st.markdown("## 你的性格类型可能是:")
     st.markdown(f"# :point_right: {personality_type}")
     # st.markdown(f"<p style='color:red'>{personality_type}</p>",True) # HTML
 
@@ -126,7 +126,7 @@ def page5():
     # 用户输入自我介绍
 
     # evaluation = st.text_area('请随便介绍一下自己')
-    evaluation = st.text_area('请随便介绍一下自己', value="比如:我喜欢打游戏,这辈子不可能打工,有没有躺着赚钱的专业")
+    evaluation = st.text_area('请随便介绍一下自己,让AI更了解你', value="比如:\n 我喜欢打游戏\n我的梦想是...\n这辈子不可能打工\n有没有毕业就能当老板的专业")
 
     # if st.button("AI推荐"):
     #     st.cache_data.clear()
@@ -206,16 +206,17 @@ def page6():
     st.markdown(f"# :point_right: {new_code}")
     st.markdown("> https://zhuanye.aiis.run")
     st.markdown("> 关注@AI小分队")
+    qun_image = Image.open('./static/qun.png')
+    st.image(qun_image, caption='志愿报考交流群', use_column_width=True)
     invitation.save_invitation_code(new_code)
 
 # 设置sidebar
-image = Image.open('./static/aiteam.png')
-st.sidebar.image(image, caption='@AI小分队', use_column_width=True)
+side_image = Image.open('./static/aiteam.png')
+st.sidebar.image(side_image, caption='@AI小分队', use_column_width=True)
 st.sidebar.markdown("因算力有限，项目未公开")
 st.sidebar.markdown("抖音@AI小分队 **获取邀请码**进行体验")
 st.sidebar.markdown("完成后会获得邀请码，可以邀请朋友体验")
-st.sidebar.markdown("#### 此测试完全免费")
-st.sidebar.markdown("#### 私信1V1专业测试")
+st.sidebar.markdown("#### 此测试完全免费:exclamation:")
 
 #页面标题
 st.title(":star: AI选专业")
