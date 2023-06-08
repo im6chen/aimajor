@@ -73,7 +73,7 @@ def add_major(input):
         ["xxx","xxx","xxx","xxx","xxx"]
         ```
         """
-    output_text = get_completion(major_prompt, temperature=1)
+    output_text = get_completion(major_prompt, temperature=1.5)
     print(output_text)
     lst = output_text.strip('[]').split(',')
     input["major5"] = [item.strip('"') for item in lst]
@@ -85,7 +85,7 @@ def analysis_mbti(input):
     major_prompt=f"""
         结合我的自我介绍{input["evaluation"]}以及我的MBTI性格类型{input["mbti"]},分析我的5个性格特点(每条特点10字以上),使用Markdown表格输出,```中是示例:
         ```
-        ## 1. {input["mbti"]}人群性格分析
+        ## 1. 性格分析
         您的性格类型可能是{input["mbti"]}，结合你的自我介绍，可能具备以下特点:
         序|优点|不足
         ---|---|---

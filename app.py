@@ -2,6 +2,7 @@ import streamlit as st
 import random
 import json
 import time
+from datetime import datetime
 
 from PIL import Image
 import major
@@ -13,6 +14,18 @@ import invitation
 # 从文件加载问题
 
 st.set_page_config(page_title="AI选专业(@AI小分队)")
+
+def save_history(user_info):
+    current_date = datetime.now().strftime("%Y%m%d")
+    path = "./static/history.json"
+
+    # 将字典转换为JSON字符串
+    json_str = json.dumps(user_info)
+
+    # 打开文件并将数据写入
+    with open(path, "a", encoding="utf-8") as file:
+        json.dump({current_date: user_info}, file, ensure_ascii=False)
+        file.write("\n")
 
 mbti_dims = ['EI', 'SN', 'TF', 'JP']
 
@@ -99,6 +112,10 @@ def create_page_function(number):
             answer = transdict[user_selector]
             index = dim.index(q["score"])
             st.session_state.user_score[dim][index] += answer
+        st.markdown(f"""
+                    >  进度: {jindu}
+                    ---
+                    """)
 
         if st.button("下一步"):
             st.session_state.page += 1
@@ -120,13 +137,13 @@ def page5():
     st.markdown("---")
     st.markdown("现在,随便介绍一下自己,让AI结合你的类型,来帮助你选择专业")
     # 用户选择性别
-    gender = st.radio('选择你的性别', ('男', '女'), horizontal=True)
+    gender = st.radio('选择你的性别', ('男👦', '女👧'), horizontal=True)
     # 用户选择理科/文科
     subject = st.radio('你学的是文科还是理科', ('理科', '文科'), horizontal=True)
     # 用户输入自我介绍
 
     # evaluation = st.text_area('请随便介绍一下自己')
-    evaluation = st.text_area('请随便介绍一下自己,让AI更了解你', value="比如:\n 我喜欢打游戏\n我的梦想是...\n这辈子不可能打工\n有没有毕业就能当老板的专业")
+    evaluation = st.text_area('请随便介绍一下自己,让AI更了解你', value="比如:我喜欢打游戏 / 我的梦想是... / 这辈子不可能打工 / 数学不行 / 英语很好 / 比较宅 / 喜欢旅行")
 
     # if st.button("AI推荐"):
     #     st.cache_data.clear()
@@ -165,6 +182,8 @@ def page6():
         except Exception as e:
             st.error("服务器过载，正在重新计算")
             continue  # 继续重新执行该代码段
+
+    save_history(st.session_state.user_info)
     my_bar.progress(21,":mag: 正在检索中国大学专业数据库...")
     st.markdown(f"# :zap: AI分析结果:")
 
